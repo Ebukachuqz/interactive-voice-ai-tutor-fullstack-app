@@ -2,6 +2,7 @@ import React from "react";
 import BuddyCard from "./_components/BuddyCard";
 import BuddysList from "./_components/BuddysList";
 import CTA from "./_components/CTA";
+import { recentSessions } from "@/constants";
 
 const Dashboard = () => {
   return (
@@ -34,7 +35,11 @@ const Dashboard = () => {
         />
       </section>
       <section className="home-section">
-        <BuddysList />
+        <BuddysList
+          title={"Recent Completed Sessions"}
+          buddys={recentSessions}
+          classNames={"w-2/3 max-lg:w-full"}
+        />
         <CTA />
       </section>
     </main>
