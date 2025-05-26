@@ -78,8 +78,8 @@ export const navItems = [
     href: "/",
   },
   {
-    label: "Companions",
-    href: "/companions",
+    label: "Buddys",
+    href: "/buddys",
   },
   {
     label: "My Journey",
