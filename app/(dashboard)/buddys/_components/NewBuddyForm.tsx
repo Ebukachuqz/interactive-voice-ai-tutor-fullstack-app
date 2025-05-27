@@ -14,6 +14,9 @@ import {
 import { CustomFormInput } from "@/components/ui/customFormInput";
 import { CustomFormSelect } from "@/components/ui/customFormSelect";
 import { CustomFormTextarea } from "@/components/ui/customFormTextarea";
+import { createBuddyAction } from "@/actions/buddy.actions";
+import { toast } from "sonner";
+import { redirect } from "next/navigation";
 
 export default function NewBuddyForm() {
   const form = useForm<NewBuddyFormSchemaType>({
@@ -28,8 +31,24 @@ export default function NewBuddyForm() {
     },
   });
 
-  function onSubmit(values: NewBuddyFormSchemaType) {
-    console.log(values);
+  async function onSubmit(values: NewBuddyFormSchemaType) {
+    try {
+      toast.promise(createBuddyAction(values), {
+        onAutoClose: async ({ type, promise }) => {
+          if (type === "success") {
+            redirect(`/buddys/${(await promise).id}`);
+          }
+        },
+        duration: 2500,
+        loading: "Creating your Buddy...",
+        success: (data) =>
+          `Your Buddy "${data.name}" has been created successfully!`,
+        error: (err) =>
+          err instanceof Error ? err.message : "Failed to create buddy.",
+      });
+    } catch (error) {
+      console.error("Buddy creation failed:", error);
+    }
   }
 
   return (
