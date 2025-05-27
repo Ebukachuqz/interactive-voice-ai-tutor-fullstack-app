@@ -43,7 +43,7 @@ const BuddyCard = ({
         />
         <p className="text-sm">{duration} minutes</p>
       </div>
-      <Link href={`/companions/${id}`} className="w-full">
+      <Link href={`/buddys/${id}`} className="w-full">
         <button className="btn-primary w-full justify-center">
           Start Learning
         </button>
