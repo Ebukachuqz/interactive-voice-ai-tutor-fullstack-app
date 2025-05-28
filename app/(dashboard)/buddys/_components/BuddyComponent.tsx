@@ -1,0 +1,192 @@
+"use client";
+
+import { cn, configureAssistant, getSubjectColors } from "@/lib/utils";
+import { vapiClient } from "@/lib/vapi.sdk";
+import Image from "next/image";
+import React, { useEffect, useRef, useState } from "react";
+import Lottie, { LottieRefCurrentProps } from "lottie-react";
+import soundwaves from "@/constants/soundwaves.json";
+
+const enum CallStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+  FINISHED = "FINISHED",
+  CONNECTING = "CONNECTING",
+}
+
+const BuddyComponent = ({ buddy, userName, userImage }: any) => {
+  //TODO!: Define proper types for props
+  const { name, subject, topic, voice, style } = buddy;
+  const [callStatus, setCallStatus] = useState(CallStatus.INACTIVE);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const lottieRef = useRef<LottieRefCurrentProps>(null);
+  const [isMuted, setIsMuted] = useState(false);
+
+  const toggleMicrophone = () => {
+    const ismuted = vapiClient.isMuted();
+    vapiClient.setMuted(!ismuted);
+    setIsMuted(!ismuted);
+  };
+
+  const handleCall = () => {
+    setCallStatus(CallStatus.CONNECTING);
+
+    const assistantOverrides = {
+      variableValues: { subject, topic, style },
+      clientMessages: ["transcript"],
+      serverMessages: [],
+    };
+
+    const voiceLowerCase: string = voice.toLowerCase(); //TODO fix slect fields to return lower case values
+    const styleLowerCase: string = style.toLowerCase();
+    vapiClient.start(
+      configureAssistant(voiceLowerCase, styleLowerCase, name),
+      // @ts-expect-error config is not typed
+      assistantOverrides
+    );
+  };
+
+  const handleDisconnect = () => {
+    setCallStatus(CallStatus.FINISHED);
+    vapiClient.stop();
+  };
+
+  useEffect(() => {
+    if (lottieRef) {
+      if (isSpeaking) {
+        lottieRef.current?.play();
+      } else {
+        lottieRef.current?.stop();
+      }
+    }
+  }, [isSpeaking]);
+
+  useEffect(() => {
+    const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
+    const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
+
+    const onMessage = () => {};
+
+    const onSpeechStart = () => setIsSpeaking(true);
+    const onSpeechEnd = () => setIsSpeaking(false);
+
+    const onError = (error: Error) => console.error("Error:", error);
+
+    // Vapi call events
+    vapiClient.on("call-start", onCallStart);
+    vapiClient.on("call-end", onCallEnd);
+    vapiClient.on("message", onMessage);
+    vapiClient.on("speech-start", onSpeechStart);
+    vapiClient.on("speech-end", onSpeechEnd);
+    vapiClient.on("error", onError);
+
+    return () => {
+      vapiClient.off("call-start", onCallStart);
+      vapiClient.off("call-end", onCallEnd);
+      vapiClient.off("message", onMessage);
+      vapiClient.off("speech-start", onSpeechStart);
+      vapiClient.off("speech-end", onSpeechEnd);
+      vapiClient.off("error", onError);
+    };
+  }, []);
+
+  return (
+    <section className="flex flex-col h-[70vh]">
+      <section className="flex gap-8 max-sm:flex-col">
+        <div className="companion-section">
+          <div
+            className="companion-avatar"
+            style={{ backgroundColor: getSubjectColors(subject) }}
+          >
+            <div
+              className={cn(
+                "absolute transition-opacity duration-1000",
+                callStatus === CallStatus.FINISHED ||
+                  callStatus === CallStatus.INACTIVE
+                  ? "opacity-1001"
+                  : "opacity-0",
+                callStatus === CallStatus.CONNECTING &&
+                  "opacity-100 animate-pulse"
+              )}
+            >
+              <Image
+                src={`/icons/${subject}.svg`}
+                alt={subject}
+                width={150}
+                height={150}
+                className="max-sm:w-fit"
+              />
+            </div>
+
+            <div
+              className={cn(
+                "absolute transition-opacity duration-1000",
+                callStatus === CallStatus.ACTIVE ? "opacity-100" : "opacity-0"
+              )}
+            >
+              <Lottie
+                lottieRef={lottieRef}
+                animationData={soundwaves}
+                autoplay={false}
+                className="companion-lottie"
+              />
+            </div>
+          </div>
+          <p className="font-bold text-2xl">{name}</p>
+        </div>
+
+        <div className="user-section">
+          <div className="user-avatar">
+            <Image
+              src={userImage}
+              alt={userName}
+              width={130}
+              height={130}
+              className="rounded-lg"
+            />
+            <p className="font-bold text-2xl">{userName}</p>
+          </div>
+          <button
+            className="btn-mic"
+            onClick={toggleMicrophone}
+            disabled={callStatus !== CallStatus.ACTIVE}
+          >
+            <Image
+              src={isMuted ? "/icons/mic-off.svg" : "/icons/mic-on.svg"}
+              alt="mic"
+              width={36}
+              height={36}
+            />
+            <p className="max-sm:hidden">
+              {isMuted ? "Turn on microphone" : "Turn off microphone"}
+            </p>
+          </button>
+          <button
+            className={cn(
+              "rounded-lg py-2 cursor-pointer transition-colors w-full text-white",
+              callStatus === CallStatus.ACTIVE ? "bg-red-700" : "bg-primary",
+              callStatus === CallStatus.CONNECTING && "animate-pulse"
+            )}
+            onClick={
+              callStatus === CallStatus.ACTIVE ? handleDisconnect : handleCall
+            }
+          >
+            {callStatus === CallStatus.ACTIVE
+              ? "End Session"
+              : callStatus === CallStatus.CONNECTING
+              ? "Connecting"
+              : "Start Session"}
+          </button>
+        </div>
+      </section>
+
+      <section className="transcript">
+        <div className="transcript-message no-scrollbar">MESSAGES</div>
+        <div className="transcript-fade" />
+      </section>
+    </section>
+  );
+};
+
+export default BuddyComponent;

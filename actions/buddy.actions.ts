@@ -56,3 +56,18 @@ export async function getAllBuddysAction({
   }
   return data;
 }
+
+export async function getBuddyByIdAction(id: string) {
+  const supabase = createSupabaseClient();
+  const { data, error } = await supabase
+    .from("buddys")
+    .select()
+    .eq("id", id)
+    .single();
+
+  if (error || !data) {
+    console.error("Error fetching buddy:", error);
+    throw new Error(`Error fetching buddy: ${error?.message}`);
+  }
+  return data;
+}
