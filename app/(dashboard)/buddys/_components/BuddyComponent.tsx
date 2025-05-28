@@ -98,7 +98,7 @@ const BuddyComponent = ({ buddy, userName, userImage }: any) => {
   }, []);
 
   return (
-    <section className="flex flex-col h-[70vh]">
+    <section className="flex flex-col">
       <section className="flex gap-8 max-sm:flex-col">
         <div className="companion-section">
           <div
@@ -121,7 +121,7 @@ const BuddyComponent = ({ buddy, userName, userImage }: any) => {
                 alt={subject}
                 width={150}
                 height={150}
-                className="max-sm:w-fit"
+                className="w-[150px] h-[150px] max-sm:w-[70px] max-sm:h-[70px]"
               />
             </div>
 
@@ -187,25 +187,34 @@ const BuddyComponent = ({ buddy, userName, userImage }: any) => {
         </div>
       </section>
 
-      <section className="transcript">
-        <div className="transcript-message no-scrollbar">
+      <div className="text-center md:text-start ">
+        <h2 className="text-2xl w-full font-bold mb-1 mt-4">Transcript</h2>
+        {messages.length === 0 && (
+          <p className="text-gray-500">
+            No messages yet. Start the session to see the transcript.
+          </p>
+        )}
+      </div>
+      <section className="transcript max-h-[calc(100vh-300px)]">
+        <div className="transcript-message">
           {messages.map((message, index) => {
             if (message.role === "assistant") {
               return (
-                <p key={index} className="max:sm:text-sm">
+                <p key={index} className="max-sm:text-sm">
                   {name.split(" ")[0].replace("/[.,]/g, ", "")}:{" "}
                   {message.content}
                 </p>
               );
             } else if (message.role === "user") {
               return (
-                <p key={index} className="text-primary max:sm:text-sm">
+                <p key={index} className="text-primary max-sm:text-sm">
                   {userName}: {message.content}
                 </p>
               );
             }
           })}
         </div>
+
         <div className="transcript-fade" />
       </section>
     </section>
