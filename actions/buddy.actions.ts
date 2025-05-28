@@ -98,7 +98,8 @@ export const getRecentSessionsAction = async (limit = 10) => {
     .order("created_at", { ascending: false })
     .limit(limit);
 
-  if (error) throw new Error(error.message);
+  if (error) return console.error("Error fetching recent sessions:", error);
+  // throw new Error(error.message);
 
   return data.map(({ buddys }) => buddys);
 };
