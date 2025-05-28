@@ -51,8 +51,9 @@ const BuddyPage = async ({ params }: PageProps) => {
       </article>
       <BuddyComponent
         buddy={buddy}
+        // @ts-expect-error config is not typed
         id={id}
-        userName={user.firstName}
+        userName={user.firstName!}
         userImage={user.imageUrl}
       />
     </main>

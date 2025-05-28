@@ -15,7 +15,13 @@ const enum CallStatus {
   CONNECTING = "CONNECTING",
 }
 
-const BuddyComponent = ({ buddy, userName, userImage }: any) => {
+type BuddyProps = {
+  buddy: Companion;
+  userName: string;
+  userImage: string;
+};
+
+const BuddyComponent = ({ buddy, userName, userImage }: BuddyProps) => {
   //TODO!: Define proper types for props
   const { name, id: buddyId, subject, topic, voice, style } = buddy;
   const [callStatus, setCallStatus] = useState(CallStatus.INACTIVE);

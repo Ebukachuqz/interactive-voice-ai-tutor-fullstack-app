@@ -67,6 +67,7 @@ const ProfilePage = async () => {
             Recent Sessions
           </AccordionTrigger>
           <AccordionContent>
+            {/* @ts-expect-error config is not typed */}
             <BuddysList title="Recent Sessions" buddys={sessionHistory} />
           </AccordionContent>
         </AccordionItem>
