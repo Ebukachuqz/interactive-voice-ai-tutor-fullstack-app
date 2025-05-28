@@ -71,3 +71,34 @@ export async function getBuddyByIdAction(id: string) {
   }
   return data;
 }
+
+export async function addBuddyToSessionHistoryAction(buddyId: string) {
+  const { userId, redirectToSignIn } = await auth();
+  if (!userId) redirectToSignIn();
+
+  const supabase = createSupabaseClient();
+  const { data, error } = await supabase.from("session_history").insert({
+    buddy_id: buddyId,
+    user_id: userId,
+  });
+
+  if (error) {
+    console.error("Error adding buddy to session history:", error);
+    throw new Error(`Error adding buddy to session history: ${error.message}`);
+  }
+
+  return data;
+}
+
+export const getRecentSessionsAction = async (limit = 10) => {
+  const supabase = createSupabaseClient();
+  const { data, error } = await supabase
+    .from("session_history")
+    .select(`buddys:buddy_id (*)`)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) throw new Error(error.message);
+
+  return data.map(({ buddys }) => buddys);
+};

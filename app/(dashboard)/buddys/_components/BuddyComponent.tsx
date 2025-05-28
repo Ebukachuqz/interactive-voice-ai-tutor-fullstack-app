@@ -6,6 +6,7 @@ import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 import soundwaves from "@/constants/soundwaves.json";
+import { addBuddyToSessionHistoryAction } from "@/actions/buddy.actions";
 
 const enum CallStatus {
   ACTIVE = "ACTIVE",
@@ -16,7 +17,7 @@ const enum CallStatus {
 
 const BuddyComponent = ({ buddy, userName, userImage }: any) => {
   //TODO!: Define proper types for props
-  const { name, subject, topic, voice, style } = buddy;
+  const { name, id: buddyId, subject, topic, voice, style } = buddy;
   const [callStatus, setCallStatus] = useState(CallStatus.INACTIVE);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
@@ -65,7 +66,10 @@ const BuddyComponent = ({ buddy, userName, userImage }: any) => {
 
   useEffect(() => {
     const onCallStart = () => setCallStatus(CallStatus.ACTIVE);
-    const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
+    const onCallEnd = () => {
+      setCallStatus(CallStatus.FINISHED);
+      addBuddyToSessionHistoryAction(buddyId);
+    };
 
     const onMessage = (message: Message) => {
       if (message.type === "transcript" && message.transcriptType === "final") {
@@ -95,7 +99,7 @@ const BuddyComponent = ({ buddy, userName, userImage }: any) => {
       vapiClient.off("speech-end", onSpeechEnd);
       vapiClient.off("error", onError);
     };
-  }, []);
+  }, [buddyId]);
 
   return (
     <section className="flex flex-col">
