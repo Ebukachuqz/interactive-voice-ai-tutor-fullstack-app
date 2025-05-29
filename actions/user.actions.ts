@@ -1,3 +1,5 @@
+"use server";
+
 import { createSupabaseClient } from "@/lib/supabase";
 
 export const getUserSessionsAction = async (userId: string, limit = 10) => {
