@@ -78,16 +78,12 @@ export const navItems = [
     href: "/",
   },
   {
-    label: "Buddys",
+    label: "Learning Buddys",
     href: "/buddys",
   },
   {
     label: "My Journey",
     href: "/my-journey",
-  },
-  {
-    label: "Sign In",
-    href: "/sign-in",
   },
 ];
 
