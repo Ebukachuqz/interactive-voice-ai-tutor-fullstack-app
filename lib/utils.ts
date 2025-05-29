@@ -24,11 +24,7 @@ export function getSubjectColors(subject: string): string {
   return subjectsColors[subject as keyof typeof subjectsColors] || "#CCCCCC"; // Default color if subject not found
 }
 
-export const configureAssistant = (
-  voice: string,
-  style: string,
-  name: string
-) => {
+export const configureAssistant = (voice: string, style: string) => {
   const voiceId =
     voices[voice as keyof typeof voices][
       style as keyof (typeof voices)[keyof typeof voices]
@@ -72,7 +68,9 @@ export const configureAssistant = (
         },
       ],
     },
+    // @ts-expect-error type exists
     clientMessages: [],
+    // @ts-expect-error type exists
     serverMessages: [],
   };
   return vapiAssistant;

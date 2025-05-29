@@ -49,7 +49,7 @@ const BuddyComponent = ({ buddy, userName, userImage }: BuddyProps) => {
     const voiceLowerCase: string = voice.toLowerCase(); //TODO fix slect fields to return lower case values
     const styleLowerCase: string = style.toLowerCase();
     vapiClient.start(
-      configureAssistant(voiceLowerCase, styleLowerCase, name),
+      configureAssistant(voiceLowerCase, styleLowerCase),
       // @ts-expect-error config is not typed
       assistantOverrides
     );
