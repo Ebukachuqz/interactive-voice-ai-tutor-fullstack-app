@@ -7,9 +7,6 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [{ hostname: "img.clerk.com" }],
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
 };
 
 export default withSentryConfig(nextConfig, {
