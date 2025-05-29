@@ -89,6 +89,10 @@ export const navItems = [
     label: "Create Buddy",
     href: "/buddys/new",
   },
+  {
+    label: "Subscriptions",
+    href: "/subscriptions",
+  },
 ];
 
 export const buddyCardData = [
